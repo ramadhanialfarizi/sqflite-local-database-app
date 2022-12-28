@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
-//import 'package:path/path.dart';
 import 'package:sqflite_training_app/helper/db_helper.dart';
 
-class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key});
+import '../model/product_model.dart';
+
+class UpdateScreen extends StatefulWidget {
+  final ProductModel? productModel;
+  const UpdateScreen({super.key, this.productModel});
 
   @override
-  State<CreateScreen> createState() => _CreateScreenState();
+  State<UpdateScreen> createState() => _UpdateScreenState();
 }
 
-class _CreateScreenState extends State<CreateScreen> {
+class _UpdateScreenState extends State<UpdateScreen> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
   final productNameController = TextEditingController();
   final productCategoryController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  // String? name;
+  // String? category;
 
   @override
   void initState() {
     super.initState();
     databaseHelper.databaseAvailable();
+    productNameController.text = widget.productModel!.name ?? " ";
+    productCategoryController.text = widget.productModel!.category ?? " ";
   }
 
   @override
@@ -31,9 +37,11 @@ class _CreateScreenState extends State<CreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final idParameter = ModalRoute.of(context)!.settings.arguments as String;
+    // name = idParameter.
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add new product"),
+        title: Text("Edit product"),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -75,10 +83,10 @@ class _CreateScreenState extends State<CreateScreen> {
                 onPressed: () async {
                   final validForm = formKey.currentState!.validate();
                   if (validForm) {
-                    await databaseHelper.insertData({
+                    await databaseHelper.updateData(widget.productModel!.id!, {
                       'name': productNameController.text,
                       'category': productCategoryController.text,
-                      'created_at': DateTime.now().toString(),
+                      //'created_at': DateTime.now().toString(),
                       'update_at': DateTime.now().toString(),
                     });
 

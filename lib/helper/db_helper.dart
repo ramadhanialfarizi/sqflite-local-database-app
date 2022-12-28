@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -48,20 +48,35 @@ class DatabaseHelper {
 
   // SELECT / READ  ALL DATA FROM DATABASE
   Future<List<ProductModel>> getAllData() async {
-    try {
-      final data = await _database!.query(tableName);
-      List<ProductModel> result =
-          data.map((e) => ProductModel.fromJson(e)).toList();
-      return result;
-    } catch (e) {
-      print(e);
-    }
-    return [];
+    final data = await _database!.query(tableName);
+    List<ProductModel> result =
+        data.map((e) => ProductModel.fromJson(e)).toList();
+    return result;
   }
 
   // INSERT INTO DATABASE (fungsi mereturn id)
   Future<int> insertData(Map<String, dynamic> row) async {
-    final queryInsert = await _database!.insert(tableName, row);
-    return queryInsert;
+    final query = await _database!.insert(tableName, row);
+    return query;
+  }
+
+  // UPDATE DATA
+  Future<int> updateData(int idParams, Map<String, dynamic> row) async {
+    final query = await _database!.update(
+      tableName,
+      row,
+      where: '$id = ?',
+      whereArgs: [idParams],
+    );
+    return query;
+  }
+
+  //DELETE DATA
+  Future deleteData(int idParams) async {
+    await _database!.delete(
+      tableName,
+      where: '$id = ?',
+      whereArgs: [idParams],
+    );
   }
 }

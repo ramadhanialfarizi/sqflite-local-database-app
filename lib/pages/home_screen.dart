@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_training_app/helper/db_helper.dart';
 import 'package:sqflite_training_app/model/product_model.dart';
+import 'package:sqflite_training_app/pages/update_screen.dart';
 
 class FirstSCreen extends StatefulWidget {
   const FirstSCreen({super.key});
@@ -10,16 +11,26 @@ class FirstSCreen extends StatefulWidget {
 }
 
 class _FirstSCreenState extends State<FirstSCreen> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  DatabaseHelper? databaseHelper = DatabaseHelper();
 
   Future refresh() async {
     setState(() {});
   }
 
+  Future _initDatabase() async {
+    await databaseHelper!.databaseAvailable();
+    setState(() {});
+  }
+
+  Future delete(int id) async {
+    await databaseHelper!.deleteData(id);
+    setState(() {});
+  }
+
   @override
   void initState() {
+    _initDatabase();
     super.initState();
-    databaseHelper.databaseAvailable();
   }
 
   @override
@@ -31,7 +42,9 @@ class _FirstSCreenState extends State<FirstSCreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed("/create");
+              Navigator.of(context).pushNamed("/create").then((value) {
+                setState(() {});
+              });
             },
             icon: Icon(Icons.add),
           ),
@@ -40,37 +53,66 @@ class _FirstSCreenState extends State<FirstSCreen> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: refresh,
-          child: FutureBuilder<List<ProductModel>>(
-            future: databaseHelper.getAllData(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.length == 0) {
-                  return Center(
-                    child: Text('Data is empty'),
-                  );
-                }
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(snapshot.data![index].name ?? " "),
-                      subtitle: Text(snapshot.data![index].category ?? " "),
-                    );
+          child: (databaseHelper != null)
+              ? FutureBuilder<List<ProductModel>>(
+                  future: databaseHelper!.getAllData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.length == 0) {
+                        return Center(
+                          child: Text('Data is empty'),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(snapshot.data![index].name ?? " "),
+                            subtitle:
+                                Text(snapshot.data![index].category ?? " "),
+                            leading: IconButton(
+                              onPressed: () {
+                                delete(snapshot.data![index].id!);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                // Navigator.of(context).pushNamed(
+                                //   "/update",
+                                //   arguments: snapshot.data![index],
+                                // );
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return UpdateScreen(
+                                      productModel: snapshot.data![index],
+                                    );
+                                  },
+                                ));
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                          );
+                        },
+                      );
+                    } else if (snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text('Data not find'),
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.blue,
+                        ),
+                      );
+                    }
                   },
-                );
-              } else if (snapshot.hasData == null) {
-                return Center(
-                  child: Text('Data not find'),
-                );
-              } else {
-                return Center(
+                )
+              : Center(
                   child: CircularProgressIndicator(
                     backgroundColor: Colors.blue,
                   ),
-                );
-              }
-            },
-          ),
+                ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_training_app/pages/create_screen.dart';
 import 'package:sqflite_training_app/pages/home_screen.dart';
+import 'package:sqflite_training_app/pages/update_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/first': (context) => const FirstSCreen(),
         '/create': (context) => const CreateScreen(),
+        '/update': (context) => const UpdateScreen(),
       },
     );
   }
