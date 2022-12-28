@@ -39,55 +39,58 @@ class _CreateScreenState extends State<CreateScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              TextFormField(
-                controller: productNameController,
-                decoration: InputDecoration(
-                  hintText: 'Product Name',
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: productNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Product Name',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '* Silahkan masukan nama produk';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '* Silahkan masukan nama produk';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: productCategoryController,
-                decoration: InputDecoration(
-                  hintText: 'category',
+                const SizedBox(
+                  height: 10,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '* Silahkan masukan kategori';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final validForm = formKey.currentState!.validate();
-                  if (validForm) {
-                    await databaseHelper.insertData({
-                      'name': productNameController.text,
-                      'category': productCategoryController.text,
-                      'created_at': DateTime.now().toString(),
-                      'update_at': DateTime.now().toString(),
-                    });
+                TextFormField(
+                  controller: productCategoryController,
+                  decoration: InputDecoration(
+                    hintText: 'category',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '* Silahkan masukan kategori';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final validForm = formKey.currentState!.validate();
+                    if (validForm) {
+                      await databaseHelper.insertData({
+                        'name': productNameController.text,
+                        'category': productCategoryController.text,
+                        'created_at': DateTime.now().toString(),
+                        'update_at': DateTime.now().toString(),
+                      });
 
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text("Save Data"),
-              ),
-            ],
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text("Save Data"),
+                ),
+              ],
+            ),
           ),
         ),
       ),

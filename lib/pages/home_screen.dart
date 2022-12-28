@@ -88,16 +88,14 @@ class _FirstSCreenState extends State<FirstSCreen> {
                                       productModel: snapshot.data![index],
                                     );
                                   },
-                                ));
+                                )).then((value) {
+                                  setState(() {});
+                                });
                               },
                               icon: Icon(Icons.edit),
                             ),
                           );
                         },
-                      );
-                    } else if (snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text('Data not find'),
                       );
                     } else {
                       return Center(
